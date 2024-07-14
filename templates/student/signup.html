@@ -46,9 +46,9 @@
   />
 </div>
 <div class="w-1/2 max-w-xs flex flex-col sm:flex-row mt-4 sm:items-center"></div>
-<label class="text-xl" for="department">Department</label>
+<label class="text-xl" for="department">Language</label>
 <select class="rounded border border-red-300 py-2 focus:outline-none focus:ring-2 focus:ring-red-200 mt-2 focus:border-red-500 text-base pl-3 pr-10 text-gray-800" name="department">
-  <option   value="">Select a dept</option>
+  <option   value="">Select a Language</option>
   {% for dept in departments %}
   <option   value="{{dept.id}}">{{dept}}</option>
   {% endfor %}

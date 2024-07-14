@@ -5,11 +5,6 @@ from django.contrib.auth.models import User
 from django.contrib import messages
 from django.core.files.storage import FileSystemStorage
 
-
-
-
-
-
 def logout(request):
     auth.logout(request)
     messages.success(request,'Logout successful')
