@@ -5,7 +5,7 @@ from django.utils import timezone
 # Create your models here.
 class Author(models.Model):
     name=models.CharField(max_length=350)
-    description=models.CharField(max_length=450)
+    description=models.CharField(max_length=1550)
     def __str__(self):
         return self.name
     
