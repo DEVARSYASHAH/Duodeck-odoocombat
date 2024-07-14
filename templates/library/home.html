@@ -1,0 +1,203 @@
+{% extends 'base.html' %} {% block heading %} Books List {% endblock heading %}
+<!--  -->
+{% block content %}
+<!-- searchbar -->
+<form class="flex sm:flex-row flex-col" action="/search/">
+  <div
+    class="w-full md:w-1/2 l:w-1/3 flex flex-col sm:flex-row sm:items-center"
+  >
+    <label class="text-lg" for="search-query">Search :</label>
+    <input
+      class="w-full sm:w-2/3 px-2 py-1 bg-transparent border-white border-2 mt-4 sm:mt-0 sm:ml-10 rounded text-white"
+      type="text"
+      name="search-query"
+      id="search"
+    />
+  </div>
+  <div class="flex space-x-4 mt-4 sm:mt-0 flex-row sm:items-center">
+    <button
+      class="text-white hover:shadow-md rounded bg-blue-600 px-4 py-1 text-gray-100"
+      name="author"
+    >
+      Author
+    </button>
+    <button
+      class="hover:shadow-md bg-yellow-400 text-gray-900 rounded px-4 py-1"
+      name="book"
+    >
+      Book
+    </button>
+  </div>
+</form>
+<!-- sorting alphabetically -->
+<form
+  class="flex flex-col sm:flex-row sm:space-x-4 mt-8 sm:items-center"
+  action="/sort/"
+>
+  <h3>Sort :</h3>
+  <select
+    class="rounded focus:outline-none focus:ring-2 focus:ring-red-200 focus:border-red-500 text-base pr-3 pl-1 text-gray-900"
+    name="sort_type"
+    id="sort_type"
+  >
+    <option value="book">book</option>
+    <option value="author">author</option>
+  </select>
+  <ul id="sortable" class="flex flex-wrap space-x-1">
+    <li><button name="sort" value="A">A</button></li>
+    <li><button name="sort" value="B">B</button></li>
+    <li><button name="sort" value="C">C</button></li>
+    <li><button name="sort" value="D">D</button></li>
+    <li><button name="sort" value="E">E</button></li>
+    <li><button name="sort" value="F">F</button></li>
+    <li><button name="sort" value="G">G</button></li>
+    <li><button name="sort" value="H">H</button></li>
+    <li><button name="sort" value="I">I</button></li>
+    <li><button name="sort" value="J">J</button></li>
+    <li><button name="sort" value="K">K</button></li>
+    <li><button name="sort" value="L">L</button></li>
+    <li><button name="sort" value="M">M</button></li>
+    <li><button name="sort" value="N">N</button></li>
+    <li><button name="sort" value="O">O</button></li>
+    <li><button name="sort" value="P">P</button></li>
+    <li><button name="sort" value="Q">Q</button></li>
+    <li><button name="sort" value="R">R</button></li>
+    <li><button name="sort" value="S">S</button></li>
+    <li><button name="sort" value="T">T</button></li>
+    <li><button name="sort" value="U">U</button></li>
+    <li><button name="sort" value="V">V</button></li>
+    <li><button name="sort" value="W">W</button></li>
+    <li><button name="sort" value="X">X</button></li>
+    <li><button name="sort" value="Y">Y</button></li>
+    <li><button name="sort" value="Z">Z</button></li>
+  </ul>
+</form>
+<!-- all books -->
+<ul
+  class="mt-10 md:px-4 lg:px-12 xl:px-0 grid grid-cols-1 md:grid-cols-3 xl:grid-cols-4"
+>
+  {% for book in books %}
+  <li class="mb-12 md:mb-4 mx-auto text-center">
+    <h2 class="text-lg font-bold">{{book.name}}</h2>
+    <h4 class="text-xs font-regular text-blue-500 pt-2">{{book.author}}</h4>
+    <h4 class="text-sm pb-2 text-yellow-300">{{book.category}}</h4>
+    <div class="grid place-items-center p-2">
+      <img
+        src="{{book.image.url}}"
+        alt="{{book.name}}"
+        height="100"
+        width="100"
+        class="mb-4"
+      />
+    </div>
+    {% if not user.is_superuser and not user.is_anonymous %}
+    <!--  -->
+
+    {% if book in issuedbooks %}
+    <p class="text-green-500 font-medium">issued</p>
+    {% elif book in requestedbooks %}
+    <p class="font-medium">issued requested</p>
+    {% else %}
+
+    <a
+      class="text-white hover:shadow-md rounded bg-pink-600 px-4 py-1"
+      href="/request-book-issue/{{book.id}}/"
+      >Request Issue</a
+    >
+    {% endif %} {% endif %} {% if user.is_superuser %}
+    <a
+      href="/admin/library/book/{{book.id}}/change/"
+      class="text-white hover:shadow-md rounded bg-pink-600 px-4 py-1"
+      >Edit</a
+    >
+    {% endif %}
+  </li>
+
+  {% endfor %}
+</ul>
+
+<!-- author search results -->
+{% if 'author' in request.get_full_path %} {% for author in author_results %}
+
+<div {% if not forloop.first %} class="my-8" {% endif %}>
+  <h1 class="text-lg font-bold mb-2">{{author.name}}</h1>
+
+  <ul class="list-disc px-4">
+    {% for book in author.book_set.all %}
+    <li>
+      <div class="flex flex-row space-x-4">
+        <h2>{{book.name}}</h2>
+        {% if not user.is_superuser and not user.is_anonymous %}
+        <!--  -->
+        {% if book in issuedbooks %}
+        <p class="text-green-500 font-medium">issued</p>
+        {% elif book in requestedbooks %}
+        <p class="text-pink-500 font-medium">issued requested</p>
+        {% else %}
+        <a
+          class="hover:shadow-md rounded text-blue-500 underline"
+          href="/request-book-issue/{{book.id}}/"
+          >Request Issue</a
+        >
+        {% endif %} {% endif %}
+      </div>
+    </li>
+
+    {%empty %}
+    <h2>No Books</h2>
+    {% endfor %}
+  </ul>
+</div>
+{%empty %}
+<h2>Not Found</h2>
+{% endfor %} {% endif %}
+<!-- book results -->
+{% if 'book' in request.get_full_path %}
+<ul
+  class="mt-10 md:px-4 lg:px-12 xl:px-0 grid grid-cols-2 md:grid-cols-4 justify-items-center"
+>
+  {% for book in books_results %}
+  <li class="px-2">
+    <h2 class="text-md font-bold">{{book.name}}</h2>
+    <h4 class="text-sm">{{book.author}}</h4>
+    <img
+      src="{{book.image.url}}"
+      alt="{{book.name}}"
+      height="80"
+      width="80"
+      class="mb-4"
+    />
+    {% if not user.is_superuser and not user.is_anonymous %}
+    <!--  -->
+    {% if book in issuedbooks %}
+    <p class="text-green-500 font-medium">issued</p>
+    {% elif book in requestedbooks %}
+    <p class="text-pink-500 font-medium">issued requested</p>
+    {% else %}
+    <a
+      class="hover:shadow-md rounded text-blue-500 underline"
+      href="/request-book-issue/{{book.id}}/"
+      >Request Issue</a
+    >
+    {% endif %} {% endif %} {% if user.is_superuser %}
+    <a
+      href="/admin/library/book/{{book.id}}/change/"
+      class="text-white hover:shadow-md rounded bg-blue-500 px-4 py-1"
+      >Edit</a
+    >
+    {% endif %}
+  </li>
+  {%empty %}
+  <h2>No Books Found</h2>
+  {% endfor %}
+</ul>
+{% endif %}
+<script>
+  const options = document.querySelectorAll("#sort_type option");
+  options.forEach((option) => {
+    if (option.textContent === "{{selected | escapejs}}") {
+      option.selected = true;
+    }
+  });
+</script>
+{% endblock content %}
